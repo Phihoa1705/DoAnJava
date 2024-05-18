@@ -1,15 +1,9 @@
 package Test;
 
-import Database.JDBCUtil;
-
-import java.sql.Connection;
+import ClientSide.Views.LoginBank_Views;
 
 public class Test1 {
     public static void main(String[] args) {
-        Connection connection = JDBCUtil.getConnection();
-
-        JDBCUtil.printInfo(connection);
-
-        JDBCUtil.closeConnection(connection);
+//        new LoginBank_Views();
     }
 }

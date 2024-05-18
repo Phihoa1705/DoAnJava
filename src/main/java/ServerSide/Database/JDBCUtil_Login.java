@@ -1,4 +1,4 @@
-package Database;
+package ServerSide.Database;
 
 import com.mysql.cj.jdbc.Driver;
 
@@ -7,7 +7,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class JDBCUtil {
+public class JDBCUtil_Login {
     public static Connection getConnection(){
         Connection c = null;
         try{
@@ -15,7 +15,7 @@ public class JDBCUtil {
             DriverManager.registerDriver(new Driver());
 
 //          Các thông số
-            String URL = "jdbc:mySQL://localhost:3306/doanjvnc";
+            String URL = "jdbc:mySQL://localhost:3306/login";
             String user = "root";
             String passWord = "Hphbo*!123";
 //          Tạo kết nối
