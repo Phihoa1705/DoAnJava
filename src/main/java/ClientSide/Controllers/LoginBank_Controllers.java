@@ -1,6 +1,7 @@
 package ClientSide.Controllers;
 
 import ClientSide.Views.LoginBank_Views;
+import ClientSide.Views.Signup_Views;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,14 +29,17 @@ public class LoginBank_Controllers implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         String nsk = e.getActionCommand();
-        if (nsk == "Đăng Nhập") {
-            System.out.println("Nút đăng nhập click");
+        if (nsk.equals("Đăng Nhập")) {
             String userName = this.loginBankViews.getUserNameTF().getText();
             String userPass = this.loginBankViews.getUserPassTF().getText();
+//            if (userPass.equals("") || userName.equals("")) {
+//                this.loginBankViews.thongBaoNhapDuLieu();
+//            }
             String role = this.loginBankViews.getSelectRole().getSelectedItem().toString();
+            System.out.println("Nút đăng nhập click với role là: " + role);
 
-//            Gửi yêu cầu kiểm tra cho Server
-            Thread checkAcc = new Thread(new Thread_Check_Acc(socket,role,userPass,userName));
+            Thread checkAcc = new Thread(new Thread_Check_Acc(this.socket, role, userPass, userName, this.loginBankViews));
+            checkAcc.setName("checkAcc");
             checkAcc.start();
 
             try {
@@ -43,8 +47,9 @@ public class LoginBank_Controllers implements ActionListener {
             } catch (InterruptedException ex) {
                 throw new RuntimeException(ex);
             }
-        }else {
-            System.out.println("Thoát!!");
+        } else {
+            new Signup_Views(this.socket);
+            this.loginBankViews.dispose();
         }
     }
 }

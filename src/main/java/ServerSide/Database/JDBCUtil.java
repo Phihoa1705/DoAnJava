@@ -7,7 +7,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class JDBCUtil_Login {
+public class JDBCUtil {
     public static Connection getConnection(){
         Connection c = null;
         try{
@@ -15,7 +15,7 @@ public class JDBCUtil_Login {
             DriverManager.registerDriver(new Driver());
 
 //          Các thông số
-            String URL = "jdbc:mySQL://localhost:3306/login";
+            String URL = "jdbc:mySQL://localhost:3306/banksystem";
             String user = "root";
             String passWord = "Hphbo*!123";
 //          Tạo kết nối

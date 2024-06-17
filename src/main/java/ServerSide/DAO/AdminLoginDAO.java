@@ -1,6 +1,6 @@
 package ServerSide.DAO;
 
-import ServerSide.Database.JDBCUtil_Login;
+import ServerSide.Database.JDBCUtil;
 import Models.AdminLogin_Models;
 
 import java.sql.Connection;
@@ -41,7 +41,7 @@ public class AdminLoginDAO implements DAOInterface<AdminLogin_Models>{
         try {
 
 //            Tạo kết nối
-            connection = JDBCUtil_Login.getConnection();
+            connection = JDBCUtil.getConnection();
 //            Tạo đối tượng PreparedStatement
             String sql = "select * from admin where adminName=?";
             PreparedStatement pst = connection.prepareStatement(sql);
@@ -62,7 +62,7 @@ public class AdminLoginDAO implements DAOInterface<AdminLogin_Models>{
             e.printStackTrace();
         }
 //        Đóng kết nối
-        JDBCUtil_Login.closeConnection(connection);
+        JDBCUtil.closeConnection(connection);
         return kqua;
     }
 

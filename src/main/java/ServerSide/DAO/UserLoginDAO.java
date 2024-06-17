@@ -1,6 +1,6 @@
 package ServerSide.DAO;
 
-import ServerSide.Database.JDBCUtil_Login;
+import ServerSide.Database.JDBCUtil;
 import Models.UserLogin_Models;
 
 import java.sql.Connection;
@@ -38,17 +38,24 @@ public class UserLoginDAO implements DAOInterface<UserLogin_Models>{
     public UserLogin_Models selectById(UserLogin_Models userlogin) {
         UserLogin_Models kqua = null;
         try {
-//          Tạo kết nối
-            Connection connection = JDBCUtil_Login.getConnection();
-//          Tạo đối tượng PreparedStatement
+//      Bước 1: Tạo kết nối
+            Connection connection = JDBCUtil.getConnection();
+//      Bước 2: Tạo ra đối tượng PreparedStatement
             String sql = "select * from userlogin where userName=?";
             PreparedStatement pst = connection.prepareStatement(sql);
-//          Thực thi câu lệnh
+//      Bước 3: Thực thi câu lệnh SQL
             pst.setString(1,userlogin.getUserName());
             System.out.println(sql);
-
+//      executeQuery là truy vấn
+//      executeQuery(sql) trả về đối tượng ResultSet
+//      Cứ coi ResultSet như là 1 table có nhiều dòng bên trong chúng ta có thể lấy từng dòng ra thông qua vòng lặp while()
             ResultSet rs = pst.executeQuery();
-//          Lấy dữ liệu ra
+
+//      Bước 4:
+
+//      rs.next() là 1 phương thức đi tới (duyệt từng dòng 1) nếu còn dữ liệu thì next() rồi lấy dữ liệu ra
+//      getString(<columnName>) tương ứng với dòng đó thì ta sẽ lấy dữ liệu ra (lấy giá trị của cột id ra)
+//      getString(<columnInt>) có thể truyền vào thứ tự cột
             while (rs.next()) {
                 String userName = rs.getString("userName");
                 String passWord = rs.getString("passWord");
@@ -56,8 +63,8 @@ public class UserLoginDAO implements DAOInterface<UserLogin_Models>{
 
                 kqua  = new UserLogin_Models(userName,passWord,fullName);
             }
-//          Đóng kết nối
-            JDBCUtil_Login.closeConnection(connection);
+//      Bước 5:
+            JDBCUtil.closeConnection(connection);
         } catch (Exception e) {
             e.printStackTrace();
         }
