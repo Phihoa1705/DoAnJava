@@ -10,7 +10,7 @@ import java.net.Socket;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
+
 
 public class BalanceEnquiry_Views extends JFrame {
     private Socket socket;
@@ -18,8 +18,10 @@ public class BalanceEnquiry_Views extends JFrame {
     private JButton b1;
     private int balance;
     private String pin;
-    public BalanceEnquiry_Views(Socket socket,String pin) {
+    private String cardno;
+    public BalanceEnquiry_Views(Socket socket,String pin,String cardno) {
         this.socket = socket;
+        this.cardno = cardno;
         this.pin = pin;
         this.init();
         this.setVisible(true);
@@ -120,5 +122,9 @@ public class BalanceEnquiry_Views extends JFrame {
 
     public void setPin(String pin) {
         this.pin = pin;
+    }
+
+    public String getCardno() {
+        return cardno;
     }
 }

@@ -1,4 +1,4 @@
-package ClientSide.Views.LimitText;
+package LimitText;
 
 import javax.swing.text.*;
 

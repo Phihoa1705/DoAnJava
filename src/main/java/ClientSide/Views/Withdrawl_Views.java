@@ -12,11 +12,13 @@ public class Withdrawl_Views extends JFrame {
     private Socket socket;
     private String pin;
     private TextField textField;
+    private String cardno;
     private JButton b1,b2;
 
-    public Withdrawl_Views(Socket socket,String pin){
+    public Withdrawl_Views(Socket socket,String pin,String cardno){
         this.socket = socket;
         this.pin = pin;
+        this.cardno = cardno;
         this.init();
         this.setVisible(true);
     }
@@ -109,6 +111,15 @@ public class Withdrawl_Views extends JFrame {
     public void setB2(JButton b2) {
         this.b2 = b2;
     }
+
+    public String getCardno() {
+        return cardno;
+    }
+
+    public void setCardno(String cardno) {
+        this.cardno = cardno;
+    }
+
     // Phương thức để hiển thị thông báo
     public void showMessage(String message) {
         JOptionPane.showMessageDialog(null,message);

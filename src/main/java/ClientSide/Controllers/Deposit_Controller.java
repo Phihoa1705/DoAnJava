@@ -44,11 +44,11 @@ public class Deposit_Controller implements ActionListener {
                     OP.writeUTF(amount);
                     JOptionPane.showMessageDialog(null, amount + " GỬI TIỀN THÀNH CÔNG ");
                     depositViews.setVisible(false);
-                    new MainClass_Views(this.socket,this.depositViews.getPin());
+                    new MainClass_Views(this.socket,this.depositViews.getPin(),this.depositViews.getCardno());
                 }
             } else if (nsk.equals("TRỞ VỀ")) {
                 depositViews.setVisible(false);
-                new MainClass_Views(this.socket,this.depositViews.getPin());
+                new MainClass_Views(this.socket,this.depositViews.getPin(),this.depositViews.getCardno());
             }
         } catch (Exception E) {
             E.printStackTrace();

@@ -12,9 +12,11 @@ public class Deposit_Views extends JFrame {
     private String pin;
     private TextField textField;
     private JButton b1,b2;
+    private String cardno;
 
-    public Deposit_Views(Socket socket,String pin) {
+    public Deposit_Views(Socket socket, String pin, String cardno) {
         this.socket = socket;
+        this.cardno = cardno;
         this.pin = pin;
         this.init();
         this.setVisible(true);
@@ -101,5 +103,9 @@ public class Deposit_Views extends JFrame {
 
     public void setB2(JButton b2) {
         this.b2 = b2;
+    }
+
+    public String getCardno() {
+        return cardno;
     }
 }

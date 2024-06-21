@@ -11,9 +11,11 @@ public class MainClass_Views extends JFrame {
     private Socket socket;
     private JButton b1, b2, b3, b4, b5, b6, b7;
     private String pin;
+    private String card_no;
 
-    public MainClass_Views(Socket socket, String pin) {
+    public MainClass_Views(Socket socket, String pin,String card_no) {
         this.pin = pin;
+        this.card_no = card_no;
         this.socket = socket;
         this.init();
         this.setVisible(true);
@@ -95,5 +97,17 @@ public class MainClass_Views extends JFrame {
 
     public String getPin() {
         return pin;
+    }
+
+    public String getCard_no() {
+        return card_no;
+    }
+
+    public void setCard_no(String card_no) {
+        this.card_no = card_no;
+    }
+
+    public void setPin(String pin) {
+        this.pin = pin;
     }
 }

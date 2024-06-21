@@ -75,7 +75,7 @@ public class Signup3_Controller implements ActionListener {
                     OP.writeUTF(fac);
                     JOptionPane.showMessageDialog(null,"Card Number :" + cardno + "\n Pin : " + pin);
                     this.signup3Views.setVisible(false);
-                    new Deposit_Views(this.socket,pin);
+                    new Deposit_Views(this.socket,pin,cardno);
                 }
             } catch (Exception E) {
                 E.printStackTrace();

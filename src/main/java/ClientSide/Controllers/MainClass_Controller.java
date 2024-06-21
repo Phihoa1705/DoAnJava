@@ -1,11 +1,7 @@
 package ClientSide.Controllers;
 
-import ClientSide.Views.BalanceEnquiry_Views;
-import ClientSide.Views.Deposit_Views;
-import ClientSide.Views.MainClass_Views;
-import ClientSide.Views.Withdrawl_Views;
+import ClientSide.Views.*;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.DataOutputStream;
@@ -33,16 +29,18 @@ public class MainClass_Controller implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         String nsk = e.getActionCommand();
         if (nsk.equals("GỬI TIỀN")) {
-            new Deposit_Views(this.socket, this.mainClassViews.getPin());
+            new Deposit_Views(this.socket, this.mainClassViews.getPin(),this.mainClassViews.getCard_no());
             this.mainClassViews.setVisible(false);
         } else if (nsk.equals("EXIT")) {
             System.exit(0);
         } else if (nsk.equals("RÚT TIỀN MẶT")) {
-            new Withdrawl_Views(this.socket,this.mainClassViews.getPin());
+            new Withdrawl_Views(this.socket,this.mainClassViews.getPin(),this.mainClassViews.getCard_no());
             this.mainClassViews.setVisible(false);
         } else if (nsk.equals("BALANCE ENQUIRY")) {
-            new BalanceEnquiry_Views(this.socket,this.mainClassViews.getPin());
+            new BalanceEnquiry_Views(this.socket,this.mainClassViews.getPin(),this.mainClassViews.getCard_no());
             this.mainClassViews.setVisible(false);
+        } else if (nsk.equals("MINI STATEMENT")) {
+            new Mini_Views(this.socket,this.mainClassViews.getPin(),this.mainClassViews.getCard_no());
         }
     }
 }

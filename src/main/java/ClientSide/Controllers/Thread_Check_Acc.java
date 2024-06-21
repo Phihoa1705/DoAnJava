@@ -46,7 +46,7 @@ public class Thread_Check_Acc implements Runnable {
             boolean ktra = IP.readBoolean();
             if (ktra) {
                 System.out.println("Đăng nhập thành công");
-                new MainClass_Views(this.socket, userPass);  // Sửa đổi này để tránh lỗi
+                new MainClass_Views(this.socket, userPass,this.loginBankViews.getUserNameTF().getText());  // Sửa đổi này để tránh lỗi
                 SwingUtilities.invokeLater(() -> {
                     loginBankViews.setVisible(false);
                 });

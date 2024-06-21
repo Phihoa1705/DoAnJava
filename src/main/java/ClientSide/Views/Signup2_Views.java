@@ -255,7 +255,4 @@ public class Signup2_Views extends JFrame {
         this.socket = socket;
     }
 
-    public static void main(String[] args) {
-        new Signup2_Views();
-    }
 }

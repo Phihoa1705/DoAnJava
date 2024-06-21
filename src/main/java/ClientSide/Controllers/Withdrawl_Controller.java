@@ -55,13 +55,13 @@ public class Withdrawl_Controller implements ActionListener {
 
                         if (!message.contains("SỐ DƯ KHÔNG ĐỦ")) {
                             this.withdrawlViews.setVisible(false);
-                            new MainClass_Views(this.socket, this.withdrawlViews.getPin());
+                            new MainClass_Views(this.socket, this.withdrawlViews.getPin(),this.withdrawlViews.getCardno());
                         }
                     }
                 }
             } else if (nsk.equals("TRỞ VỀ")) {
                 this.withdrawlViews.setVisible(false);
-                new MainClass_Views(this.socket, this.withdrawlViews.getPin());
+                new MainClass_Views(this.socket, this.withdrawlViews.getPin(),this.withdrawlViews.getCardno());
             }
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(null, "Vui lòng nhập số tiền hợp lệ");

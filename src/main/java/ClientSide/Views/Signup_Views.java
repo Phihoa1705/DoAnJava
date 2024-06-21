@@ -1,7 +1,7 @@
 package ClientSide.Views;
 
 import ClientSide.Controllers.Signup_Controller;
-import ClientSide.Views.LimitText.LimitDocumentFilter;
+import LimitText.LimitDocumentFilter;
 import com.toedter.calendar.JDateChooser;
 
 import javax.swing.*;
