@@ -1,5 +1,6 @@
 package ClientSide.Controllers;
 
+import ClientSide.Views.Admin.Main_Views;
 import ClientSide.Views.LoginBank_Views;
 import ClientSide.Views.MainClass_Views;
 
@@ -46,7 +47,11 @@ public class Thread_Check_Acc implements Runnable {
             boolean ktra = IP.readBoolean();
             if (ktra) {
                 System.out.println("Đăng nhập thành công");
-                new MainClass_Views(this.socket, userPass,this.loginBankViews.getUserNameTF().getText());  // Sửa đổi này để tránh lỗi
+                if (role.equals("User")) {
+                    new MainClass_Views(this.socket, userPass,this.loginBankViews.getUserNameTF().getText());  // Sửa đổi này để tránh lỗi
+                } else if (role.equals("Admin")) {
+                    new Main_Views();
+                }
                 SwingUtilities.invokeLater(() -> {
                     loginBankViews.setVisible(false);
                 });

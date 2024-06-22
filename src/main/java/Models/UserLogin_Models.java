@@ -12,6 +12,10 @@ public class UserLogin_Models {
                 this.passWord = passWord;
         }
 
+        public UserLogin_Models(String userName) {
+                this.userName = userName;
+        }
+
         public UserLogin_Models() {
 
         }
