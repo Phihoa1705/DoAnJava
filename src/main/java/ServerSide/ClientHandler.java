@@ -10,9 +10,11 @@ import javax.swing.*;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
+import java.security.MessageDigest;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Base64;
 import java.util.Date;
 
 public class ClientHandler implements Runnable{
@@ -171,6 +173,8 @@ public class ClientHandler implements Runnable{
             String sql2 = "insert into userlogin(userName, passWord, fullName)" +
                     " values (?, ?, ?)";
 
+            pin = toSHA256(pin);
+
             PreparedStatement pst1 = connection.prepareStatement(sql1);
             PreparedStatement pst2 = connection.prepareStatement(sql2);
 
@@ -262,6 +266,9 @@ public class ClientHandler implements Runnable{
         if(role.equals("User")) {
             System.out.println(userName);
             System.out.println(userPass);
+
+            userPass = toSHA256(userPass);
+
             UserLogin_Models u_find =  new UserLogin_Models(userName,userPass);
 
             UserLogin_Models u_result = UserLoginDAO.getInstance().selectById(u_find);
@@ -284,6 +291,36 @@ public class ClientHandler implements Runnable{
             }
         }
         return kqua;
+    }
+
+    public static String toSHA256(String str) {
+        // Thêm muối (salt) để tăng độ phức tạp cho mật khẩu
+        String salt = "afajkbjkasbdsdacugxuiagjzhzxmnxcbmv";
+        String result = null;
+
+        // Nối muối vào chuỗi mật khẩu
+        str += salt;
+
+        try {
+            // Chuyển chuỗi thành mảng byte sử dụng mã hóa UTF-8
+            byte[] dataByte = str.getBytes("UTF-8");
+            // Do các thuật toán băm tất cả đều làm việc với byte nên ta phải chuyển chuỗi thành byte
+
+            // Lấy đối tượng MessageDigest sử dụng thuật toán SHA-256
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+
+            // Mã hóa dữ liệu và nhận mảng byte kết quả
+            byte[] digest = md.digest(dataByte);
+
+            // Chuyển đổi mảng byte kết quả thành chuỗi Base64
+            result = Base64.getEncoder().encodeToString(digest);
+        } catch (Exception e) {
+            // Xử lý ngoại lệ nếu có lỗi xảy ra
+            e.printStackTrace();
+        }
+
+        // Trả về kết quả mã hóa
+        return result;
     }
 
     public void sendMessage(String message) {
