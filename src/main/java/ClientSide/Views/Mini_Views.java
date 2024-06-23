@@ -26,8 +26,12 @@ public class Mini_Views extends JFrame {
 
     private void init() {
         JLabel label1 = new JLabel("");
-        label1.setBounds(20,140,400,200);
-        this.add(label1);
+        label1.setOpaque(true); // To ensure the background color is applied
+        label1.setBackground(new Color(255, 204, 204));
+        JScrollPane scrollPane = new JScrollPane(label1);
+        scrollPane.setBounds(20, 140, 340, 200);
+        scrollPane.getViewport().setBackground(new Color(255, 204, 204));
+        this.add(scrollPane);
 
         JLabel label2 = new JLabel("Kết Quả Sao Kê");
         label2.setFont(new Font("Times New Roman",Font.BOLD,15));
