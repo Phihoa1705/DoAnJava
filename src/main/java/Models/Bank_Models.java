@@ -13,6 +13,10 @@ public class Bank_Models {
         this.amount = amount;
     }
 
+    public Bank_Models(String pin) {
+        this.pin = pin;
+    }
+
     public String getPin() {
         return pin;
     }

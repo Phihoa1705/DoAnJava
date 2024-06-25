@@ -5,28 +5,25 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class ADMINSignup3_Controller implements ActionListener, ListSelectionListener {
-    private ADMINSignup3_Views adminSignup3Views;
+public class ADMINBank_Controller implements ActionListener, ListSelectionListener {
+    private ADMINBank_Views adminBankViews;
 
-    public ADMINSignup3_Controller(ADMINSignup3_Views adminSignup3Views) {
-        this.adminSignup3Views = adminSignup3Views;
+    public ADMINBank_Controller(ADMINBank_Views adminBankViews) {
+        this.adminBankViews = adminBankViews;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         String nsk = e.getActionCommand();
         if (nsk.equals("Thêm")) {
-            this.adminSignup3Views.addUser();
+            this.adminBankViews.addUser();
         } else if (nsk.equals("Sửa")) {
-            this.adminSignup3Views.editUser();
+            this.adminBankViews.editUser();
         } else if (nsk.equals("Xóa")) {
-            this.adminSignup3Views.deleteUser();
-        } else if (nsk.equals("Tiếp theo")) {
-            new ADMINBank_Views(this.adminSignup3Views.getMainViews());
-            this.adminSignup3Views.setVisible(false);
+            this.adminBankViews.deleteUser();
         } else if (nsk.equals("Back")) {
-            this.adminSignup3Views.getMainViews().batCuaSo();
-            this.adminSignup3Views.setVisible(false);
+            this.adminBankViews.getMainViews().batCuaSo();
+            this.adminBankViews.setVisible(false);
         }
     }
 
@@ -35,7 +32,7 @@ public class ADMINSignup3_Controller implements ActionListener, ListSelectionLis
         //        getValueIsAdjusting kiểm tra xem sự thay đổi lựa chọn trong bảng hoặc
         //        danh sách có còn đang tiếp diễn hay không.
         if (!e.getValueIsAdjusting()) {
-            this.adminSignup3Views.showUserDetails();
+            this.adminBankViews.showUserDetails();
         }
     }
 }

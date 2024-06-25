@@ -6,7 +6,6 @@ import ServerSide.DAO.AdminLoginDAO;
 import ServerSide.DAO.UserLoginDAO;
 import ServerSide.Database.JDBCUtil;
 
-import javax.swing.*;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
@@ -106,12 +105,100 @@ public class ClientHandler implements Runnable{
                     } else {
                         OP.writeUTF("SỐ DƯ KHÔNG ĐỦ"); // Gửi thông báo số dư không đủ
                     }
+                } else if ("GET BALANCE".equals(message)) {
+                        String pin = IP.readUTF();
+                        int balance = getBalance(pin);
+                        OP.writeInt(balance);
+                } else if ("GET CARDNUMBER(USER NAME)".equals(message)) {
+                    String userName = IP.readUTF();
+                    String kqua = getUserName(userName);
+                    OP.writeUTF(kqua);
+                } else if ("GET BANK2".equals(message)) {
+                    String pin = IP.readUTF();
+                    String kqua = selectBank2(pin);
+                    OP.writeUTF(kqua);
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+    private String getUserName(String userName){
+        String result = "";
+        try {
+            Connection connection =  JDBCUtil.getConnection();
+
+            String sql1 = "select * from userlogin where userName = ?";
+
+            PreparedStatement pst1 = connection.prepareStatement(sql1);
+
+            pst1.setString(1,userName);     //truyen userName
+
+            ResultSet rs = pst1.executeQuery();
+
+            while (rs.next()) {
+                String userName_data = rs.getString("userName");
+                result = userName_data;
+            }
+
+            JDBCUtil.closeConnection(connection);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    private int getBalance(String pin) {
+        int balance = 0;
+        Connection connection = null;
+        try {
+            connection = JDBCUtil.getConnection();
+            String sql = "select * from bank where pin = ?";
+            PreparedStatement pst = connection.prepareStatement(sql);
+
+            pst.setString(1,pin);
+            ResultSet rs = pst.executeQuery();
+            while (rs.next()) {
+                if(rs.getString("type").equals("Deposit")) {
+                    balance += Integer.parseInt(rs.getString("amount"));
+                } else {
+                    balance -= Integer.parseInt(rs.getString("amount"));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            JDBCUtil.closeConnection(connection);
+        }
+        return balance;
+    }
+
+    private String selectBank2(String pin) {
+        StringBuilder result = new StringBuilder();
+        Connection connection = null;
+        try {
+            connection = JDBCUtil.getConnection();
+            String sql = "SELECT * FROM bank WHERE pin = ?";
+            PreparedStatement pst = connection.prepareStatement(sql);
+            pst.setString(1, pin);
+            ResultSet rs = pst.executeQuery();
+
+            while (rs.next()) {
+                result.append(rs.getString("date"))
+                        .append(" | ")
+                        .append(rs.getString("type"))
+                        .append(" | ")
+                        .append(rs.getString("amount"))
+                        .append("<br><br>");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            JDBCUtil.closeConnection(connection);
+        }
+        return result.toString();
+    }
+
 
     private int selectBank(String pin) {
         int balance = 0;

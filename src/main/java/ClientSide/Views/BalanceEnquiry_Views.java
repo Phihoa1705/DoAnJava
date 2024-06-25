@@ -6,10 +6,10 @@ import ServerSide.Database.JDBCUtil;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.net.Socket;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+
 
 
 public class BalanceEnquiry_Views extends JFrame {
@@ -19,12 +19,20 @@ public class BalanceEnquiry_Views extends JFrame {
     private int balance;
     private String pin;
     private String cardno;
+    private DataOutputStream OP;
+    private DataInputStream IP;
     public BalanceEnquiry_Views(Socket socket,String pin,String cardno) {
-        this.socket = socket;
-        this.cardno = cardno;
-        this.pin = pin;
-        this.init();
-        this.setVisible(true);
+        try {
+            this.socket = socket;
+            this.IP = new DataInputStream(this.socket.getInputStream());
+            this.OP = new DataOutputStream(this.socket.getOutputStream());
+            this.cardno = cardno;
+            this.pin = pin;
+            this.init();
+            this.setVisible(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void init() {
@@ -56,32 +64,24 @@ public class BalanceEnquiry_Views extends JFrame {
         b1.addActionListener(ac);
         l3.add(b1);
 
-        Connection connection = null;
-        try {
-            connection = JDBCUtil.getConnection();
-            String sql = "select * from bank where pin = ?";
-            PreparedStatement pst = connection.prepareStatement(sql);
-
-            pst.setString(1,pin);
-            ResultSet rs = pst.executeQuery();
-            while (rs.next()) {
-                if(rs.getString("type").equals("Deposit")) {
-                    balance += Integer.parseInt(rs.getString("amount"));
-                } else {
-                    balance -= Integer.parseInt(rs.getString("amount"));
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            JDBCUtil.closeConnection(connection);
-        }
-        label2.setText(balance + "");
+        label2.setText(layDuLieuBalance(pin) + "");
 
         this.setLayout(null);
         this.setSize(1550,1080);
         this.setLocation(0,0);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
+    public int layDuLieuBalance(String pin) {
+        int balance = 0;
+        try {
+            OP.writeUTF("GET BALANCE");
+            OP.writeUTF(pin);
+            balance = IP.readInt();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return balance;
     }
 
     public Socket getSocket() {

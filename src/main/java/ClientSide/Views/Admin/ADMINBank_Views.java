@@ -1,9 +1,9 @@
 package ClientSide.Views.Admin;
 
+import Models.Bank_Models;
 import Models.Signup3_Models;
-import Models.UserLogin_Models;
+import ServerSide.DAO.BankDAO;
 import ServerSide.DAO.Signup3DAO;
-import ServerSide.DAO.UserLoginDAO;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -12,14 +12,14 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-public class ADMINSignup3_Views extends JFrame {
+public class ADMINBank_Views extends JFrame {
     private JTable table;
     private DefaultTableModel tableModel;
     private JTextArea textArea;
     private Main_Views mainViews;
     private JButton addButton, editButton, deleteButton, nextButton,backButton;
 
-    public ADMINSignup3_Views(Main_Views mainViews) {
+    public ADMINBank_Views(Main_Views mainViews) {
         this.mainViews = mainViews;
         this.init();
         this.setVisible(true);
@@ -33,7 +33,7 @@ public class ADMINSignup3_Views extends JFrame {
         this.setLocationRelativeTo(null);
 
         // Tạo bảng và JScrollPane cho bảng
-        tableModel = new DefaultTableModel(new Object[]{"form_no", "sccount_Type", "card_number","pin","facility"}, 0);
+        tableModel = new DefaultTableModel(new Object[]{"pin", "date", "type","amount"}, 0);
         table = new JTable(tableModel);
         JScrollPane tableScrollPane = new JScrollPane(table);
 
@@ -41,7 +41,7 @@ public class ADMINSignup3_Views extends JFrame {
         textArea = new JTextArea(10, 30);
         JScrollPane textAreaScrollPane = new JScrollPane(textArea);
 
-        ActionListener ac = new ADMINSignup3_Controller(this);
+        ActionListener ac = new ADMINBank_Controller(this);
 
         // Tạo các nút và thêm vào JPanel
         JPanel buttonPanel = new JPanel(new FlowLayout());
@@ -76,45 +76,41 @@ public class ADMINSignup3_Views extends JFrame {
     public void showUserDetails() {
         int selectedRow = table.getSelectedRow();
         if (selectedRow >= 0) {
-            String form_no = (String) tableModel.getValueAt(selectedRow,0);
-            String sccount_Type = (String) tableModel.getValueAt(selectedRow,1);
-            String card_number = (String) tableModel.getValueAt(selectedRow,2);
-            String pin = (String) tableModel.getValueAt(selectedRow,3);
-            String facility = (String) tableModel.getValueAt(selectedRow,4);
+            String pin = (String) tableModel.getValueAt(selectedRow,0);
+            String date = (String) tableModel.getValueAt(selectedRow,1);
+            String type = (String) tableModel.getValueAt(selectedRow,2);
+            String amount = (String) tableModel.getValueAt(selectedRow,3);
 
-            textArea.setText("form_no: " + form_no + "\nsccount_Type: "
-                    + sccount_Type + "\ncard_number: " + card_number + "\npin: " + pin
-                    + "\nfacility: " + facility);
+            textArea.setText("pin: " + pin + "\ndate: "
+                    + date + "\ntype: " + type + "\namount: " + amount);
         }
     }
 
     private void loadData(){
-        ArrayList<Signup3_Models> listSignup3 = Signup3DAO.getInstance().selectAll();
-        for (Signup3_Models signup3 : listSignup3) {
-            tableModel.addRow(new Object[]{signup3.getFormNo(),signup3.getAccountType(),signup3.getCardNumber(),signup3.getPin(),signup3.getFacility()});
+        ArrayList<Bank_Models> listBank = BankDAO.getInstance().selectAll();
+        for (Bank_Models bankModels : listBank) {
+            tableModel.addRow(new Object[]{bankModels.getPin(),bankModels.getDate(),
+                    bankModels.getType(),bankModels.getAmount()});
         }
     }
 
     public void addUser() {
-        JTextField form_noTF = new JTextField(30);
-        JTextField sccount_TypeTF = new JTextField(30);
-        JTextField card_numberTF = new JTextField(60);
-        JTextField pinTF =new JTextField(4);
-        JTextField facilityTF = new JTextField(60);
+        JTextField pinTF = new JTextField(30);
+        JTextField dateTF = new JTextField(80);
+        JTextField typeTF = new JTextField(60);
+        JTextField amountTF =new JTextField(4);
 
-        JPanel panel = new JPanel(new GridLayout(5,2));
-        panel.add(new JLabel("Form No"));
-        panel.add(form_noTF);
-        panel.add(new JLabel("Sccount Type"));
-        panel.add(sccount_TypeTF);
-        panel.add(new JLabel("Card Number"));
-        panel.add(card_numberTF);
-        panel.add(new JLabel("Pin"));
+        JPanel panel = new JPanel(new GridLayout(4,2,20,20));
+        panel.add(new JLabel("Pin:"));
         panel.add(pinTF);
-        panel.add(new JLabel("Facility"));
-        panel.add(facilityTF);
+        panel.add(new JLabel("Date:"));
+        panel.add(dateTF);
+        panel.add(new JLabel("Type:"));
+        panel.add(typeTF);
+        panel.add(new JLabel("Amount:"));
+        panel.add(amountTF);
 
-        int result = JOptionPane.showConfirmDialog(this,panel,"Add Signup3",JOptionPane.OK_CANCEL_OPTION);
+        int result = JOptionPane.showConfirmDialog(this,panel,"Add Bank",JOptionPane.OK_CANCEL_OPTION);
         /*
                Hành động của người dùng       |         Giá trị trả về
                Nhấn nút OK                    |         JOptionPane.OK_OPTION (0)
@@ -122,57 +118,51 @@ public class ADMINSignup3_Views extends JFrame {
                Đóng hộp thoại (nhấn nút X)    |         JOptionPane.CLOSED_OPTION (-1)
         */
         if (result == JOptionPane.OK_OPTION) {
-            String form_no = form_noTF.getText();
-            String sccount_Type = sccount_TypeTF.getText();
-            String card_number = card_numberTF.getText();
             String pin = pinTF.getText();
-            String facility = facilityTF.getText();
+            String date = dateTF.getText();
+            String type = typeTF.getText();
+            String amount = amountTF.getText();
 
-            if (form_no.equals("")  | sccount_Type.equals("") | card_number.equals("") | pin.equals("") | facility.equals("")) {
+            if (pin.equals("")  | date.equals("") | type.equals("") | amount.equals("")) {
                 JOptionPane.showMessageDialog(null,"Vui lòng điền đầy đủ thông tin");
             }
 
-            Signup3_Models signup3Models = new Signup3_Models(form_no,sccount_Type,card_number,pin,facility);
+            Bank_Models bankModels = new Bank_Models(pin,date,type,amount);
 
-            Signup3DAO.getInstance().insert(signup3Models);
-            tableModel.addRow(new Object[]{form_no,sccount_Type,card_number,pin,facility});
+            BankDAO.getInstance().insert(bankModels);
+            tableModel.addRow(new Object[]{pin,date,type,pin,amount});
         }
     }
 
     public void editUser(){
         int selectedRow = table.getSelectedRow();
         if (selectedRow >= 0) {
-            String card_number = (String) tableModel.getValueAt(selectedRow,2);
-            JTextField form_noTF = new JTextField((String) tableModel.getValueAt(selectedRow,0),50);
-            JTextField sccount_TypeTF = new JTextField(tableModel.getValueAt(selectedRow,1).toString(),20);
-            JTextField pinTF = new JTextField(tableModel.getValueAt(selectedRow,3).toString(),10);
-            JTextField facilityTF = new JTextField(tableModel.getValueAt(selectedRow,4).toString(),50);
+            String pin = (String) tableModel.getValueAt(selectedRow,0);
+            JTextField dateTF = new JTextField((String) tableModel.getValueAt(selectedRow,1),80);
+            JTextField typeTF = new JTextField(tableModel.getValueAt(selectedRow,2).toString(),20);
+            JTextField amountTF = new JTextField(tableModel.getValueAt(selectedRow,3).toString(),10);
 
 
-            JPanel panel = new JPanel(new GridLayout(4,2));
-            panel.add(new JLabel("Form No"));
-            panel.add(form_noTF);
-            panel.add(new JLabel("Sccount Type"));
-            panel.add(sccount_TypeTF);
-            panel.add(new JLabel("Pin"));
-            panel.add(pinTF);
-            panel.add(new JLabel("Facility"));
-            panel.add(facilityTF);
+            JPanel panel = new JPanel(new GridLayout(3,2));
+            panel.add(new JLabel("Date:"));
+            panel.add(dateTF);
+            panel.add(new JLabel("Type:"));
+            panel.add(typeTF);
+            panel.add(new JLabel("Amount:"));
+            panel.add(amountTF);
 
-            int result = JOptionPane.showConfirmDialog(this, panel, "Edit Signup3 Details", JOptionPane.OK_CANCEL_OPTION);
+            int result = JOptionPane.showConfirmDialog(this, panel, "Edit Bank Details", JOptionPane.OK_CANCEL_OPTION);
             if (result == JOptionPane.OK_OPTION) {
-                String form_no = form_noTF.getText();
-                String sccount_Type = sccount_TypeTF.getText();
-                String pin = pinTF.getText();
-                String facility = facilityTF.getText();
+                String date = dateTF.getText();
+                String type = typeTF.getText();
+                String amount = amountTF.getText();
 
-                Signup3_Models signup3Models = new Signup3_Models(form_no,sccount_Type,card_number,pin,facility);
+                Bank_Models bankModels = new Bank_Models(pin,date,type,amount);
 
-                Signup3DAO.getInstance().update(signup3Models); // Cập nhật trong cơ sở dữ liệu
-                tableModel.setValueAt(form_no, selectedRow, 0);
-                tableModel.setValueAt(sccount_Type, selectedRow, 1);
-                tableModel.setValueAt(pin,selectedRow,3);
-                tableModel.setValueAt(facility,selectedRow,4);
+                BankDAO.getInstance().update(bankModels); // Cập nhật trong cơ sở dữ liệu
+                tableModel.setValueAt(date, selectedRow, 1);
+                tableModel.setValueAt(type, selectedRow, 2);
+                tableModel.setValueAt(amount,selectedRow,3);
             }
         } else {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn một hàng để sửa.");
@@ -182,8 +172,8 @@ public class ADMINSignup3_Views extends JFrame {
     public void deleteUser() {
         int selectedRow = table.getSelectedRow();
         if (selectedRow >= 0 ) {
-            String card_number = (String) tableModel.getValueAt(selectedRow,2);
-            Signup3DAO.getInstance().delete(new Signup3_Models(card_number));
+            String pin = (String) tableModel.getValueAt(selectedRow,0);
+            BankDAO.getInstance().delete(new Bank_Models(pin));
             tableModel.removeRow(selectedRow); // Xóa khỏi bảng
         }else {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn một hàng để xóa.");

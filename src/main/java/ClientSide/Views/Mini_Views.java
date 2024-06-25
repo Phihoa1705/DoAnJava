@@ -6,6 +6,8 @@ import ServerSide.Database.JDBCUtil;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.net.Socket;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -16,12 +18,21 @@ public class Mini_Views extends JFrame {
     private String pin;
     private String cardno;
     private JButton button;
+    private DataInputStream IP;
+    private DataOutputStream OP;
+
     public Mini_Views(Socket socket,String pin,String cardno) {
-        this.socket = socket;
-        this.cardno = cardno;
-        this.pin = pin;
-        this.init();
-        this.setVisible(true);
+        try {
+            this.socket = socket;
+            this.IP = new DataInputStream(this.socket.getInputStream());
+            this.OP = new DataOutputStream(this.socket.getOutputStream());
+            this.cardno = cardno;
+            this.pin = pin;
+            this.init();
+            this.setVisible(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void init() {
@@ -46,61 +57,68 @@ public class Mini_Views extends JFrame {
         label4.setBounds(20,400,300,20);
         this.add(label4);
 
-        try {
-            Connection connection =  JDBCUtil.getConnection();
-
-            String sql1 = "select * from userlogin where userName = ?";
-
-            PreparedStatement pst1 = connection.prepareStatement(sql1);
-
-            pst1.setString(1,this.cardno);
-
-            ResultSet rs = pst1.executeQuery();
-
-            while (rs.next()) {
-                String userName = rs.getString("userName");
-                if (userName.length() >= 12) {
-                    label3.setText("Card Number: " + userName.substring(0, 4) +
-                            "XXXXXXXX" + userName.substring(12));
-                } else {
-                    label3.setText("Card Number: " + userName);  // Hoặc xử lý theo cách khác nếu chuỗi không đủ dài
-                }
-            }
-
-            JDBCUtil.closeConnection(connection);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        Connection connection = null;
-        try {
-            int balance = 0;
-
-            connection = JDBCUtil.getConnection();
-
-            String sql = "select * from bank where pin = ?";
-            PreparedStatement pst = connection.prepareStatement(sql);
-
-            pst.setString(1,pin);
-            ResultSet rs = pst.executeQuery();
-            while (rs.next()) {
-                label1.setText(label1.getText() + "<html>" + rs.getString("date") +
-                        "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + rs.getString("type") +
-                        "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + rs.getString("amount") + "<br><br><html>");
+//        try {
+//            Connection connection =  JDBCUtil.getConnection();
+//
+//            String sql1 = "select * from userlogin where userName = ?";
+//
+//            PreparedStatement pst1 = connection.prepareStatement(sql1);
+//
+//            pst1.setString(1,this.cardno);     //truyen userName
+//
+//            ResultSet rs = pst1.executeQuery();
+//
+//            while (rs.next()) {
+//                String userName = rs.getString("userName");
+//                if (userName.length() >= 12) {
+//                    label3.setText("Card Number: " + userName.substring(0, 4) +
+//                            "XXXXXXXX" + userName.substring(12));
+//                } else {
+//                    label3.setText("Card Number: " + userName);  // Hoặc xử lý theo cách khác nếu chuỗi không đủ dài
+//                }
+//            }
+//
+//            JDBCUtil.closeConnection(connection);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+        String cardNum = getCardNumber(this.cardno);
+        label3.setText("Card Number: " + cardNum);  // Hoặc xử lý theo cách khác nếu chuỗi không đủ dài
 
 
-                if(rs.getString("type").equals("Deposit")) {
-                    balance += Integer.parseInt(rs.getString("amount"));
-                } else {
-                    balance -= Integer.parseInt(rs.getString("amount"));
-                }
-            }
-            label4.setText("Your Total Balance is: " + balance);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            JDBCUtil.closeConnection(connection);
-        }
+//        Connection connection = null;
+//        try {
+//            int balance = 0;
+//
+//            connection = JDBCUtil.getConnection();
+//
+//            String sql = "select * from bank where pin = ?";
+//            PreparedStatement pst = connection.prepareStatement(sql);
+//
+//            pst.setString(1,pin);
+//            ResultSet rs = pst.executeQuery();
+//            while (rs.next()) {
+//                label1.setText(label1.getText() + "<html>" + rs.getString("date") +
+//                        "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + rs.getString("type") +
+//                        "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + rs.getString("amount")
+//                        + "<br><br><html>");
+//
+//
+//                if(rs.getString("type").equals("Deposit")) {
+//                    balance += Integer.parseInt(rs.getString("amount"));
+//                } else {
+//                    balance -= Integer.parseInt(rs.getString("amount"));
+//                }
+//            }
+//            label4.setText("Your Total Balance is: " + balance);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        } finally {
+//            JDBCUtil.closeConnection(connection);
+//        }
+        label1.setText(label1.getText() +"<html>" + getBank(pin) +"</html>");
+
+        label4.setText("Your Total Balance is: " + layDuLieuBalance(pin));
 
         ActionListener ac = new Mini_Controller(this.socket,this);
 
@@ -116,6 +134,41 @@ public class Mini_Views extends JFrame {
         this.setSize(400,600);
         this.setLayout(null);
         this.setLocation(20,20);
+    }
+    public String getBank(String pin){
+        String result = "";
+        try {
+            OP.writeUTF("GET BANK2");
+            OP.writeUTF(pin);
+            result = IP.readUTF();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public String getCardNumber(String userName) {
+        String cardNumber = "";
+        try {
+            OP.writeUTF("GET CARDNUMBER(USER NAME)");
+            OP.writeUTF(userName);
+            cardNumber = IP.readUTF();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return cardNumber;
+    }
+
+    public int layDuLieuBalance(String pin) {
+        int balance = 0;
+        try {
+            OP.writeUTF("GET BALANCE");
+            OP.writeUTF(pin);
+            balance = IP.readInt();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return balance;
     }
 
     public Socket getSocket() {
