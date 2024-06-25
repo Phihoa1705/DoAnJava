@@ -117,6 +117,8 @@ public class ClientHandler implements Runnable{
                     String pin = IP.readUTF();
                     String kqua = selectBank2(pin);
                     OP.writeUTF(kqua);
+                } else if ("PIN CHANGE".equals(message)) {
+
                 }
             }
         } catch (Exception e) {
@@ -200,7 +202,7 @@ public class ClientHandler implements Runnable{
     }
 
 
-    private int selectBank(String pin) {
+    private synchronized int selectBank(String pin) {
         int balance = 0;
         try {
             Connection connection = JDBCUtil.getConnection();
@@ -228,7 +230,8 @@ public class ClientHandler implements Runnable{
         return balance;
     }
 
-    private  void  insertBank(String pin, Date date,String type,String amount) {
+//    Đảm bảo rằng các phương thức giao dịch chỉ được thực hiện một lần bởi một thread.
+    private synchronized void  insertBank(String pin, Date date,String type,String amount) {
         try {
             Connection connection = JDBCUtil.getConnection();
             String sql = "insert into bank(pin, date, type, amount)" +
@@ -380,6 +383,21 @@ public class ClientHandler implements Runnable{
         return kqua;
     }
 
+    // Do các thuật toán băm tất cả đều làm việc với byte nên ta phải chuyển chuỗi thành byte
+
+            /*
+                Chức năng chính của MessageDigest là chuyển đổi dữ liệu từ dạng văn bản (plaintext)
+                thành một giá trị băm (digest) duy nhất, không thể đảo ngược.
+
+                Dưới đây là một số khái niệm cơ bản liên quan đến MessageDigest:
+
+                    Các thuật toán băm (Hash Algorithms)
+                    MD5
+                    SHA-1
+                    SHA-256
+                Mỗi thuật toán này có độ dài khác nhau cho giá trị băm được tạo ra và độ an toàn khác nhau.
+             */
+
     public static String toSHA256(String str) {
         // Thêm muối (salt) để tăng độ phức tạp cho mật khẩu
         String salt = "afajkbjkasbdsdacugxuiagjzhzxmnxcbmv";
@@ -389,17 +407,19 @@ public class ClientHandler implements Runnable{
         str += salt;
 
         try {
-            // Chuyển chuỗi thành mảng byte sử dụng mã hóa UTF-8
+//            Chuỗi văn bản str sau khi đã có thêm muối được chuyển đổi thành mảng byte,
+//            sử dụng mã hóa UTF-8.Điều này là cần thiết vì MessageDigest trong Java chỉ
+//            làm việc với mảng byte.
             byte[] dataByte = str.getBytes("UTF-8");
-            // Do các thuật toán băm tất cả đều làm việc với byte nên ta phải chuyển chuỗi thành byte
 
-            // Lấy đối tượng MessageDigest sử dụng thuật toán SHA-256
+//            Lấy một đối tượng MessageDigest sử dụng thuật toán SHA-256.
             MessageDigest md = MessageDigest.getInstance("SHA-256");
 
-            // Mã hóa dữ liệu và nhận mảng byte kết quả
+//            Tính toán giá trị băm của mảng byte dataByte và lưu kết quả vào mảng byte digest.
             byte[] digest = md.digest(dataByte);
 
-            // Chuyển đổi mảng byte kết quả thành chuỗi Base64
+//            Sau khi có được giá trị băm dưới dạng mảng byte (digest), hàm sử dụng lớp Base64
+//            trong Java để mã hóa mảng byte này thành chuỗi Base64.
             result = Base64.getEncoder().encodeToString(digest);
         } catch (Exception e) {
             // Xử lý ngoại lệ nếu có lỗi xảy ra
